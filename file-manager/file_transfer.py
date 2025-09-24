@@ -64,7 +64,6 @@ __license__ = "MIT"
 # FIXME: File exists and overwrite true → Did not raise error.
 # FIXME: Destination does not exist → Create parent directories.
 # FIXME: Folder to file with overwrite true → Replaced file with folder renamed to folder name.
-# FIXME: Append timestamp before file extension when overwriting.
 
 # TODO: Change dst to parent_dst.
 # TODO: Create naming module.
