@@ -65,15 +65,16 @@ __license__ = "MIT"
 # FIXME: Destination does not exist → Create parent directories.
 # FIXME: Folder to file with overwrite true → Replaced file with folder renamed to folder name.
 
-# TODO: Change dst to parent_dst.
-# TODO: Create naming module.
-# TODO: Does not handle symlinks.
-# TODO: Add a merge option for folders.
-# TODO: Include warnings and suppression flags in arg parsing.
-# TODO: Specify trash location in arg parsing.
-# TODO: Check for disk write availability.
-# TODO: Add docstrings to all functions.
-# TODO: Construct better logging messages.
+# TODO: HIGH   Change dst to parent_dst.
+# TODO: HIGH   Create naming module.
+# TODO: HIGH   Create directory if not exists.
+# TODO: MEDIUM Add a merge option for folders.
+# TODO: MEDIUM Include warnings and suppression flags in arg parsing.
+# TODO: MEDIUM Specify trash location in arg parsing.
+# TODO: LOW    Check for disk write availability.
+# TODO: LOW    Does not handle symlinks.
+# TODO: LAST   Add docstrings to all functions.
+# TODO: LAST   Construct better logging messages.
 
 # ------------------------------------------------------------------------------
 # Imports
