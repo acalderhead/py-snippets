@@ -82,6 +82,7 @@ __license__ = "MIT"
 import logging
 import sys
 import shutil
+from pathlib import Path
 import os
 import time
 import argparse
@@ -184,9 +185,12 @@ def move_to_trash(path: str, trash_dir: str = r"C:\\Temp\\Trash") -> str:
 
     os.makedirs(trash_dir, exist_ok=True)
 
-    base_name  = os.path.basename(path)
+    filename = Path(path)
     timestamp  = time.strftime("%Y%m%d-%H%M%S")
-    trash_path = os.path.join(trash_dir, f"{base_name}_{timestamp}")
+    trash_path = os.path.join(
+        trash_dir, 
+        f"{filename.stem}_{timestamp}{filename.suffix}"
+    )
 
     shutil.move(path, trash_path)
 
