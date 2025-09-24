@@ -56,12 +56,25 @@ Limitations
 
 __author__  = "Aidan Calderhead"
 __created__ = "2025-09-24"
-__version__ = "1.1.0"
+__version__ = "1.0.0"
 __license__ = "MIT"
 
-# TODO: Add docstrings to all functions.
-# TODO: Check for disk write availability.
+# FIXME: Destination does not exist → Unable to detect if file or folder.
+# FIXME: Folder to folder or file → Error: cannot copy folder into a file.
+# FIXME: File exists and overwrite true → Did not raise error.
+# FIXME: Destination does not exist → Create parent directories.
+# FIXME: Folder to file with overwrite true → Replaced file with folder renamed to folder name.
+# FIXME: Append timestamp before file extension when overwriting.
+
+# TODO: Change dst to parent_dst.
+# TODO: Create naming module.
+# TODO: Does not handle symlinks.
 # TODO: Add a merge option for folders.
+# TODO: Include warnings and suppression flags in arg parsing.
+# TODO: Specify trash location in arg parsing.
+# TODO: Check for disk write availability.
+# TODO: Add docstrings to all functions.
+# TODO: Construct better logging messages.
 
 # ------------------------------------------------------------------------------
 # Imports
