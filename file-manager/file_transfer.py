@@ -41,7 +41,7 @@ Arguments
     Path to the destination (file path or directory).
 --action : str
     Either "move" or "copy" (default: "copy").
---overwrite : bool
+--overwrite : bool, optional
     If set, overwrite existing destination. Otherwise, skip (default: False).
 
 Dependencies
@@ -122,7 +122,7 @@ def validate_paths(src: str, dst: str, overwrite: bool) -> str:
         raise FileNotFoundError(f"Source not found: {src}")
 
     # Check writability for destination parent
-    if not is_writable(dst):
+    if not is_writable(path=dst):
         raise PermissionError(
             f"Destination directory not writable or cannot be created: {dst}"
         )
@@ -180,7 +180,7 @@ def move_to_trash(path: str, trash_dir: str = r"C:\\Temp\\Trash") -> str:
 
 def copy_item(src: str, dst: str, overwrite: bool = False) -> None:
     if os.path.exists(dst) and overwrite:
-        move_to_trash(dst)
+        move_to_trash(path=dst)
 
     if os.path.isdir(src):
         shutil.copytree(src, dst)
@@ -192,7 +192,7 @@ def copy_item(src: str, dst: str, overwrite: bool = False) -> None:
 
 def move_item(src: str, dst: str, overwrite: bool = False) -> None:
     if os.path.exists(dst) and overwrite:
-        move_to_trash(dst)
+        move_to_trash(path=dst)
 
     shutil.move(src, dst)
     logger.info(f"Moved item from {src} to {dst}")
@@ -247,13 +247,13 @@ def main(
     try:
         action = action.lower().strip()
 
-        target = resolve_destination(dst)
-        validate_paths(src, target, overwrite=overwrite)
+        target = resolve_destination(src=src, dst=dst)
+        validate_paths(src=src, dst=target, overwrite=overwrite)
 
         if action == "copy":
-            copy_item(src, target, overwrite=overwrite)
+            copy_item(src=src, dst=target, overwrite=overwrite)
         elif action == "move":
-            move_item(src, target, overwrite=overwrite)
+            move_item(src=src, dst=target, overwrite=overwrite)
         else:
             raise ValueError(f"Unsupported action: {action}")
         
