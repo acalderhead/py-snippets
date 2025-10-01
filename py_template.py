@@ -7,7 +7,7 @@
 
 """
 Module Overview
----------------
+───────────────
 Purpose
     One-two sentences on what the script is designed to accomplish.
 
@@ -23,11 +23,11 @@ Outputs
     output).
 
 Usage
------
+─────
     python script_name.py [options]
 
 Arguments
----------
+─────────
 --input : str
     Path to the input file.
 --output : str
@@ -36,12 +36,12 @@ Arguments
     Example optional argument with a default behavior.
 
 Dependencies
-------------
+────────────
 - pandas >= 2.0
 - numpy  >= 1.24
 
 Limitations
------------
+───────────
 - Tested with Python 3.11.
 - Assumes UTF-8 encoding.
 """
@@ -117,3 +117,4 @@ def main(param: str = DEFAULT_PARAM) -> None:
 
 if __name__ == "__main__":
     main()
+
