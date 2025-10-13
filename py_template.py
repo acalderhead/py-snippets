@@ -48,7 +48,7 @@ Limitations
 
 __author__  = "Aidan Calderhead"
 __created__ = "2025-09-23"
-__version__ = "0.1.0"
+__version__ = "1.2.0"
 __license__ = "MIT"
 
 # TODO:  Example Text
@@ -77,7 +77,10 @@ MAX_RETRIES:   int = 3
 
 logging.basicConfig(
     level    = logging.INFO,
-    format   = "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    format   = (
+        "%(asctime)s | %(levelname)-8s | "
+        "%(filename)-20s:%(funcName)-30s:%(lineno)-4d | %(message)s"
+    ),
     handlers = [logging.StreamHandler(sys.stdout)]
 )
 logger = logging.getLogger(__name__)
@@ -117,4 +120,3 @@ def main(param: str = DEFAULT_PARAM) -> None:
 
 if __name__ == "__main__":
     main()
-
