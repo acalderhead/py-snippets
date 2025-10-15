@@ -48,7 +48,7 @@ Limitations
 
 __author__  = "Aidan Calderhead"
 __created__ = "2025-09-23"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __license__ = "MIT"
 
 # TODO:  Example Text
@@ -129,4 +129,5 @@ def main(param: str = DEFAULT_PARAM) -> None:
 
 if __name__ == "__main__":
     main()
+
 
