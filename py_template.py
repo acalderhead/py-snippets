@@ -59,8 +59,7 @@ __license__ = "MIT"
 # Imports
 # ─────────────────────────────────────────────────────────────────────────────
 
-import logging
-import sys
+from rich_logger import RichLogger  # github/acalderhead/rich-logger
 from typing import Any
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -75,15 +74,20 @@ MAX_RETRIES:   int = 3
 # Logging Setup
 # ─────────────────────────────────────────────────────────────────────────────
 
-logging.basicConfig(
-    level    = logging.INFO,
-    format   = (
-        "%(asctime)s | %(levelname)-8s | "
-        "%(filename)-20s:%(funcName)-30s:%(lineno)-4d | %(message)s"
-    ),
-    handlers = [logging.StreamHandler(sys.stdout)]
-)
-logger = logging.getLogger(__name__)
+logger = RichLogger("project_name")
+
+"""
+Custom Logger Methods
+
+| Purpose                              | Methods                            |
+| ------------------------------------ | ---------------------------------- |
+| Execution flow and structure         | `stage`, `step`, `substep`, `info` |
+| Experiment configuration and results | `config`, `metric`, `result`       |
+| Warnings and alerts                  | `warning`, `alert`                 |
+| Errors and failures                  | `error`                            |
+| Developer checks and traceback       | `check`, `debug`                   |
+| I/O and metadata management          | `read`, `write`, `meta`            |
+"""
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Grouped Functions
@@ -111,7 +115,7 @@ def main(param: str = DEFAULT_PARAM) -> None:
         result = step_two(result)
         logger.info("Processing complete")
     except Exception as e:
-        logger.error(f"Pipeline failed: {e}")
+        logger.debug(f"Pipeline failed: {e}")
         raise
 
 # ─────────────────────────────────────────────────────────────────────────────
