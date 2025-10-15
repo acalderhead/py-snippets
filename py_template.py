@@ -77,16 +77,21 @@ MAX_RETRIES:   int = 3
 logger = RichLogger("project_name")
 
 """
-Custom Logger Methods
+Installation
+────────────
+    pip install 
+    git+https://github.com/acalderhead/rich-logger.git@v1.0.1#egg=rich_logger
 
-| Purpose                              | Methods                            |
-| ------------------------------------ | ---------------------------------- |
-| Execution flow and structure         | `stage`, `step`, `substep`, `info` |
-| Experiment configuration and results | `config`, `metric`, `result`       |
-| Warnings and alerts                  | `warning`, `alert`                 |
-| Errors and failures                  | `error`                            |
-| Developer checks and traceback       | `check`, `debug`                   |
-| I/O and metadata management          | `read`, `write`, `meta`            |
+Custom Semantics
+────────────────
+    | Purpose                        | Methods                            |
+    | ------------------------------ | ---------------------------------- |
+    | Execution flow and structure   | `stage`, `step`, `substep`, `info` |
+    | Experiment config and results  | `config`, `metric`, `result`       |
+    | Warnings and alerts            | `warning`, `alert`                 |
+    | Errors and failures            | `error`                            |
+    | Developer checks and traceback | `check`, `debug`                   |
+    | I/O and metadata management    | `read`, `write`, `meta`            |
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -124,3 +129,4 @@ def main(param: str = DEFAULT_PARAM) -> None:
 
 if __name__ == "__main__":
     main()
+
