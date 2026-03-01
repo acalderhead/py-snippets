@@ -6,50 +6,38 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 """
-Module Overview
-───────────────
 Purpose
-    One-two sentences on what the script is designed to accomplish.
+-------
+One-two sentences describing what the script is designed to do.
 
 Context
-    Optional background: why this script exists, what scenario/problem it 
-    addresses.
+-------
+Optional background on why this script exists or the scenario/problem it addresses.
 
-Inputs
-    Description of what type of data/files/parameters are expected.
+Inputs / Parameters
+------------------
+- Input files or data formats expected.
+- Key CLI options or parameters (if any).
 
 Outputs
-    What the script produces (e.g., processed files, analysis results, console 
-    output).
+-------
+- Processed data, results, or console/log output.
 
 Usage
-─────
-    python script_name.py [options]
+-----
+py script_name.py [options]
 
-Arguments
-─────────
---input : str
-    Path to the input file.
---output : str
-    Path to save the processed results.
---option : type, optional
-    Example optional argument with a default behavior.
-
-Dependencies
-────────────
-- pandas >= 2.0
-- numpy  >= 1.24
+Notes
+-----
+- Anything the future-you should be aware of.
 
 Limitations
-───────────
-- Tested with Python 3.11.
-- Assumes UTF-8 encoding.
+-----------
+- Optional constraints (e.g., assumes UTF-8 encoding, Python 3.11+).
 """
 
-__author__  = "Aidan Calderhead"
-__created__ = "2025-09-23"
-__version__ = "1.3.0"
-__license__ = "MIT"
+__author__  = "acalderhead"
+__version__ = "1.4.0"
 
 # TODO:  Example Text
 # NOTE:  Example Text
@@ -59,22 +47,76 @@ __license__ = "MIT"
 # Imports
 # ─────────────────────────────────────────────────────────────────────────────
 
-from rich_logger import RichLogger  # github/acalderhead/rich-logger
-from typing import Any
+# --- Standard ---
+from __future__ import annotations
+
+import sys
+import argparse
+from dataclasses import dataclass, fields
+from pathlib import Path
+from typing  import Any, Iterable, Sequence, Mapping
+
+# --- Third-party ---
+from rich_logger import RichLogger # github/acalderhead/rich-logger
+
+# --- Additional ---
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants / Config
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Example placeholders; adjust or remove if not needed.
-DEFAULT_PARAM: str = "default_value"
-MAX_RETRIES:   int = 3
+@dataclass(frozen = True)
+class Settings:
+    # --- Paths ---
+    base_dir:   Path = Path(__file__).resolve().parent
+    data_dir:   Path = Path("data")
+    output_dir: Path = Path("output")
+
+    # --- Constants ---
+    random_seed: int = 42
+
+    # --- Booleans ---
+    debug: bool = False
+
+
+def build_parser_from_settings(cls: type[Settings]) -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+
+    for field in fields(cls):
+        arg_name = f"--{field.name.replace('_', '-')}"
+        default  = field.default
+        arg_type = field.type
+
+        # Handle booleans properly
+        if arg_type is bool:
+            parser.add_argument(
+                arg_name,
+                action = "store_true" if default is False else "store_false",
+                help   = f"(default: {default})",
+            )
+        else:
+            parser.add_argument(
+                arg_name,
+                type    = arg_type,
+                default = default,
+                help    = f"(default: {default})",
+            )
+
+    return parser
+
+
+def parse_settings() -> Settings:
+    parser = build_parser_from_settings(Settings)
+    args   = parser.parse_args()
+    return Settings(**vars(args))
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Logging Setup
 # ─────────────────────────────────────────────────────────────────────────────
 
-logger = RichLogger("project_name")
+logger = RichLogger(Path(__file__).stem)
 
 """
 Installation
@@ -98,36 +140,48 @@ Custom Semantics
 # Grouped Functions
 # ─────────────────────────────────────────────────────────────────────────────
 
-def step_one(data: Any) -> Any:
-    """Example processing step (placeholder)."""
+def placeholder_func(data: Any, flag: bool = True) -> Any:
+    """
+    Perform a placeholder processing step on input data.
+
+    Parameters
+    ----------
+    data : Any
+        Input object to be processed. Can be a number, list, or any data type
+        depending on context.
+    flag : bool, optional
+        Example optional parameter controlling behavior (default=True).
+
+    Returns
+    -------
+    Any
+        Processed output. May match the input type or be transformed depending
+        on implementation.
+
+    Notes
+    -----
+    This function is intended as a template. Replace with actual processing logic.
+    """
+
     return data
 
-
-def step_two(data: Any) -> Any:
-    """Example processing step (placeholder)."""
-    return data
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
-def main(param: str = DEFAULT_PARAM) -> None:
-    """Run the main pipeline."""
-    logger.info("Starting main process")
-
+def main(settings: Settings) -> int:
     try:
-        result = step_one(param)
-        result = step_two(result)
+        data   = placeholder_func(settings.data_dir)
+        result = placeholder_func(data)
+        placeholder_func(result, settings.output_dir)
         logger.info("Processing complete")
     except Exception as e:
         logger.debug(f"Pipeline failed: {e}")
-        raise
+        return 1
+    return 0
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Entry Point
-# ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    main()
-
-
+    settings = parse_settings()
+    raise SystemExit(main(settings))
