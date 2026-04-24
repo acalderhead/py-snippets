@@ -8,36 +8,37 @@
 """
 Purpose
 ───────
-One-two sentences describing what the script is designed to do.
+    One-two sentences describing what the script is designed to do.
 
 Context
 ───────
-Optional background on why this script exists or the scenario/problem it addresses.
+    Optional background on why this script exists or the scenario/problem it 
+    addresses.
 
 Inputs / Parameters
 ───────────────────
-- Input files or data formats expected.
-- Key CLI options or parameters (if any).
+    param1 : Description of the first parameter or input.
+    param2 : Description of the second parameter or input.
 
 Outputs
 ───────
-- Processed data, results, or console/log output.
+    Processed data, results, or console/log output.
 
 Usage
 ─────
-py script_name.py [options]
+    py script_name.py [options]
 
 Notes
 ─────
-- Anything the future-you should be aware of.
+    Anything the future-you should be aware of.
 
 Limitations
 ───────────
-- Optional constraints (e.g., assumes UTF-8 encoding, Python 3.11+).
+    Optional constraints (e.g., assumes UTF-8 encoding, Python 3.11+).
 """
 
 __author__  = "acalderhead"
-__version__ = "1.4.1"
+__version__ = "1.5.0"
 
 # TODO:  Example Text
 # NOTE:  Example Text
@@ -50,10 +51,11 @@ __version__ = "1.4.1"
 # Standard ────────────────────────────
 import sys
 import argparse
-from dataclasses import dataclass, fields
-from pathlib     import Path
-from typing      import Any, Iterable, Sequence, Mapping
-from datetime    import datetime
+from dataclasses     import dataclass, fields, MISSING
+from pathlib         import Path
+from typing          import Any, Optional, get_type_hints, get_origin
+from collections.abc import Iterable, Sequence, Mapping
+from datetime        import datetime
 
 # Third-Party ─────────────────────────
 from rich_logger import RichLogger # github/acalderhead/rich-logger
@@ -65,11 +67,18 @@ from rich_logger import RichLogger # github/acalderhead/rich-logger
 # Constants / Config
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Fallback for interactive environments where __file__ is undefined
+try:
+    _CURRENT_FILE = Path(__file__).resolve()
+except NameError:
+    _CURRENT_FILE = Path.cwd() / "interactive_session.py"
+
+
 @dataclass(frozen = True)
 class Settings:
     # Paths ───────────────────────────
-    dir_src:    Path = Path(__file__).resolve().parent
-    dir_base:   Path = Path(dir_src).resolve().parent
+    dir_src:    Path = _CURRENT_FILE.parent
+    dir_base:   Path = dir_src.parent
     dir_data:   Path = dir_base / "data"
     dir_output: Path = dir_base / "output"
 
@@ -79,34 +88,64 @@ class Settings:
     # Booleans ────────────────────────
     debug: bool = False
 
+    def __post_init__(self):
+        """Validates settings and ensures required infrastructure exists."""
+        self.dir_output.mkdir(parents = True, exist_ok = True)
+
 
 def build_parser_from_settings(cls: type[Settings]) -> argparse.ArgumentParser:
+    """
+    Constructs an ArgumentParser dynamically from a frozen dataclass type.
+
+    cls : Dataclass type whose fields define the CLI arguments.
+
+    Returns a configured ArgumentParser with flags derived from dataclass 
+    fields. Complex types (Generics) are automatically bypassed to prevent 
+    casting errors.
+    """
+
     parser = argparse.ArgumentParser()
+    type_hints = get_type_hints(cls)
 
     for field in fields(cls):
         arg_name = f"--{field.name.replace('_', '-')}"
         default  = field.default
-        arg_type = field.type
+        arg_type = type_hints[field.name]
+        is_required = default is MISSING
 
-        # Handle booleans properly
+        # Bypasses complex types (list[str], etc.) which require custom
+        # argparse logic
+        if get_origin(arg_type) is not None:
+            continue
+
         if arg_type is bool:
-            parser.add_argument(
-                arg_name,
-                action = "store_true" if default is False else "store_false",
-                help   = f"(default: {default})",
-            )
+            if is_required:
+                parser.add_argument(arg_name, action="store_true", required=True)
+            else:
+                parser.add_argument(
+                    arg_name,
+                    action = "store_true" if default is False else "store_false",
+                    help   = f"(default: {default})",
+                )
         else:
             parser.add_argument(
                 arg_name,
-                type    = arg_type,
-                default = default,
-                help    = f"(default: {default})",
+                type     = arg_type,
+                default  = default if not is_required else None,
+                required = is_required,
+                help     = "(required)" if is_required else f"(default: {default})",
             )
 
     return parser
 
 
 def parse_settings() -> Settings:
+    """
+    Parses command-line arguments and returns a populated Settings instance.
+
+    Returns a Settings instance populated from CLI arguments or field defaults.
+    """
+
     parser = build_parser_from_settings(Settings)
     args   = parser.parse_args()
     return Settings(**vars(args))
@@ -116,7 +155,7 @@ def parse_settings() -> Settings:
 # Logging Setup
 # ─────────────────────────────────────────────────────────────────────────────
 
-logger = RichLogger(Path(__file__).stem)
+logger = RichLogger(_CURRENT_FILE.stem)
 
 """
 Installation
@@ -141,6 +180,11 @@ Custom Semantics
 # ─────────────────────────────────────────────────────────────────────────────
 
 def log_current_time() -> str:
+    """
+    Generate a compact timestamp string.
+
+    Returns a string in YYYYMMDDHHMM format.
+    """
     return datetime.now().strftime("%Y%m%d%H%M")
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -154,11 +198,7 @@ def placeholder_func(data: Any, flag: bool = True) -> Any:
     data : Input object to be processed.
     flag : Example optional parameter controlling behavior.
 
-    Returns processed output. May match the input type or be transformed 
-    depending on implementation.
-
-    This function is intended as a template. Replace with actual processing 
-    logic.
+    Returns processed output. Replace with actual logic.
     """
 
     return data
@@ -169,17 +209,26 @@ def placeholder_func(data: Any, flag: bool = True) -> Any:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main(settings: Settings) -> int:
-    try:
-        data   = placeholder_func(settings.data_dir)
-        result = placeholder_func(data)
-        placeholder_func(result, settings.output_dir)
-        logger.info("Processing complete")
-    except Exception as e:
-        logger.debug(f"Pipeline failed: {e}")
-        return 1
+    """
+    Primary execution logic for the script.
+
+    settings : Validated Settings instance containing configuration and paths.
+
+    Returns an integer exit code (0 for success, non-zero for failure).
+    """
+
+    data   = placeholder_func(settings.dir_data)
+    result = placeholder_func(data)
+    placeholder_func(result, settings.dir_output)
+    
+    logger.info("Processing complete")
     return 0
 
 
 if __name__ == "__main__":
-    settings = parse_settings()
-    raise SystemExit(main(settings))
+    try:
+        current_settings = parse_settings()
+        sys.exit(main(current_settings))
+    except Exception as e:
+        logger.error(f"Pipeline failed: {e}", exc_info = True)
+        sys.exit(1)
