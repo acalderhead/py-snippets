@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # Module Documentation
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
 """
 Purpose
@@ -38,17 +38,17 @@ Limitations
 """
 
 __author__  = "acalderhead"
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 # TODO:  Example Text
 # NOTE:  Example Text
 # FIXME: Example Text
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # Imports
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
-# Standard ────────────────────────────
+# Standard ─────────────────────────────
 import sys
 import argparse
 from dataclasses     import dataclass, fields, MISSING
@@ -57,15 +57,15 @@ from typing          import Any, Optional, get_type_hints, get_origin
 from collections.abc import Iterable, Sequence, Mapping
 from datetime        import datetime
 
-# Third-Party ─────────────────────────
+# Third-Party ──────────────────────────
 from rich_logger import RichLogger # github/acalderhead/rich-logger
 
-# Additional ──────────────────────────
+# Additional ───────────────────────────
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # Constants / Config
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
 # Fallback for interactive environments where __file__ is undefined
 try:
@@ -76,17 +76,17 @@ except NameError:
 
 @dataclass(frozen = True)
 class Settings:
-    # Paths ───────────────────────────
+    # Paths ────────────────────────────
     dir_src:    Path = _CURRENT_FILE.parent
     dir_base:   Path = dir_src.parent
     dir_data:   Path = dir_base / "data"
     dir_output: Path = dir_base / "output"
 
-    # Constants ───────────────────────
-    random_seed: int = 42
+    # Constants ────────────────────────
+    temp_val: int = 42
 
-    # Booleans ────────────────────────
-    debug: bool = False
+    # Booleans ─────────────────────────
+    temp_bool: bool = False
 
     def __post_init__(self):
         """Validates settings and ensures required infrastructure exists."""
@@ -120,7 +120,11 @@ def build_parser_from_settings(cls: type[Settings]) -> argparse.ArgumentParser:
 
         if arg_type is bool:
             if is_required:
-                parser.add_argument(arg_name, action="store_true", required=True)
+                parser.add_argument(
+                    arg_name, 
+                    action   = "store_true",
+                    required = True
+                )
             else:
                 parser.add_argument(
                     arg_name,
@@ -151,9 +155,9 @@ def parse_settings() -> Settings:
     return Settings(**vars(args))
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # Logging Setup
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
 logger = RichLogger(_CURRENT_FILE.stem)
 
@@ -175,9 +179,9 @@ Custom Semantics
     | I/O and metadata management    | `read`, `write`, `meta`            |
 """
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # Micro Utilities
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
 def log_current_time() -> str:
     """
@@ -187,11 +191,16 @@ def log_current_time() -> str:
     """
     return datetime.now().strftime("%Y%m%d%H%M")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Grouped Functions
-# ─────────────────────────────────────────────────────────────────────────────
 
-def placeholder_func(data: Any, flag: bool = True) -> Any:
+# ──────────────────────────────────────────────────────────────────────────────
+# Grouped Functions
+# ──────────────────────────────────────────────────────────────────────────────
+
+def placeholder_func(
+        data: Any, 
+        flag: bool = True
+    ) -> Any:
+    
     """
     Perform a placeholder processing step on input data.
 
@@ -204,9 +213,9 @@ def placeholder_func(data: Any, flag: bool = True) -> Any:
     return data
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # Main
-# ─────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 
 def main(settings: Settings) -> int:
     """
@@ -225,10 +234,14 @@ def main(settings: Settings) -> int:
     return 0
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Entry Point
+# ──────────────────────────────────────────────────────────────────────────────
+
 if __name__ == "__main__":
     try:
         current_settings = parse_settings()
         sys.exit(main(current_settings))
     except Exception as e:
-        logger.error(f"Pipeline failed: {e}", exc_info = True)
+        logger.error(f"Pipeline failed: {e}")
         sys.exit(1)
